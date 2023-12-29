@@ -1,0 +1,38 @@
+#cloud-config
+hostname: serverName
+fqdn: serverName.example.com
+manage_etc_hosts: true
+users:
+  - default
+  - name: root
+    passwd: $6$<your SHA-512 password>
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_pwauth: false
+    ssh-authorized-keys:
+    - ssh-rsa <your public key>
+  - name: ubuntu
+    passwd: $6$<your SHA-512 password>
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    home: /home/ubuntu
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_pwauth: false
+    ssh-authorized-keys:
+      - ssh-rsa <your public key>
+package_update: true
+package_upgrade: true
+packages:
+  - qemu-guest-agent
+  - curl
+  - git
+  - wget
+  - whois
+runcmd:
+ - echo 'performing additional configurations'
+ - echo "export TERM=xterm" >> /etc/bash.bashrc
+ - apt autoremove && apt clean
+ - reboot
+# outputs to /var/log/cloud-init-output.log
+final_message: "The system is finally up, after $UPTIME seconds"
